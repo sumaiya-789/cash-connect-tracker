@@ -5,16 +5,25 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
 import TransactionList from '@/components/TransactionList';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import SpendingChart from '@/components/SpendingChart';
 import { getDummyTransactions } from '@/utils/dummyData';
 import { getTransactions, saveTransactions } from '@/utils/localStorage';
+import BackgroundAnimation from '@/components/BackgroundAnimation';
 
 const Transactions = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [connectedBank, setConnectedBank] = useState(null);
+  const [userName, setUserName] = useState('');
   
   useEffect(() => {
+    // Check if user has a name saved (from manual mode signup)
+    const savedName = localStorage.getItem('userName');
+    if (savedName) {
+      setUserName(savedName);
+    }
+    
     // Check which mode was used to reach this page
     const connectedBank = localStorage.getItem('connectedBank');
     
@@ -70,6 +79,7 @@ const Transactions = () => {
     <div className="min-h-screen flex flex-col p-6">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">
+          {userName ? `${userName}'s ` : ''}
           {connectedBank ? `${connectedBank} Transactions` : 'Your Transactions'}
         </h1>
         <Button variant="outline" onClick={handleGoBack}>
@@ -97,6 +107,8 @@ const Transactions = () => {
           </div>
         </div>
         
+        <SpendingChart transactions={transactions} />
+        
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
             <Calendar className="h-5 w-5 text-gray-500 mr-2" />
@@ -106,6 +118,8 @@ const Transactions = () => {
         
         <TransactionList transactions={transactions} />
       </div>
+      
+      <BackgroundAnimation />
     </div>
   );
 };
