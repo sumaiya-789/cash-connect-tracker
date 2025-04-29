@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import TransactionForm from '@/components/TransactionForm';
 import TransactionList from '@/components/TransactionList';
 import { saveTransactions, getTransactions } from '@/utils/localStorage';
 import UserSignupForm from '@/components/UserSignupForm';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
+import SpendingChart from '@/components/SpendingChart';
 
 const ManualMode = () => {
   const navigate = useNavigate();
@@ -43,13 +42,6 @@ const ManualMode = () => {
     .reduce((sum, t) => sum + t.amount, 0);
     
   const balance = totalIncome - totalExpenses;
-
-  // Prepare data for chart
-  const chartData = transactions.map(t => ({
-    date: new Date(t.date).toLocaleDateString(),
-    amount: t.type === 'expense' ? -t.amount : t.amount,
-    type: t.type
-  }));
   
   // If user hasn't signed up, show signup form
   if (!userData) {
@@ -98,20 +90,8 @@ const ManualMode = () => {
           </Card>
         </div>
         
-        <Card className="bg-white/80 backdrop-blur">
-          <CardContent className="pt-4">
-            <h2 className="text-lg font-semibold mb-4">Transaction History</h2>
-            <ChartContainer className="h-[200px]" config={{}}>
-              <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <ChartTooltip />
-                <Area type="monotone" dataKey="amount" stroke="#8884d8" fill="#8884d8" />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        {/* Replace the original chart with SpendingChart component */}
+        <SpendingChart transactions={transactions} />
         
         <Tabs defaultValue="transactions" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
