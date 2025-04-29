@@ -10,6 +10,7 @@ import { saveTransactions, getTransactions } from '@/utils/localStorage';
 import UserSignupForm from '@/components/UserSignupForm';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import SpendingChart from '@/components/SpendingChart';
+import { toast } from "sonner";
 
 const ManualMode = () => {
   const navigate = useNavigate();
@@ -30,6 +31,13 @@ const ManualMode = () => {
     const updatedTransactions = [...transactions, newTransaction];
     setTransactions(updatedTransactions);
     saveTransactions(updatedTransactions);
+  };
+  
+  const handleLogout = () => {
+    // In a real app, we might clear authentication tokens
+    setUserData(null);
+    toast.success("Logged out successfully!");
+    // Note: We're not clearing transactions here to persist them between logins
   };
   
   // Calculate totals for overview and chart data
@@ -59,9 +67,14 @@ const ManualMode = () => {
           </h1>
           <p className="text-gray-600 text-sm">{userData.email}</p>
         </div>
-        <Button variant="outline" onClick={() => navigate('/landing')}>
-          Back
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate('/landing')}>
+            Back
+          </Button>
+          <Button variant="ghost" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
       </div>
       
       <div className="grid gap-6 relative z-10">

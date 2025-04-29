@@ -7,47 +7,44 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from "sonner";
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import LoginForm from './LoginForm';
 import BackgroundAnimation from './BackgroundAnimation';
 
-const UserSignupForm = ({ onSignupComplete }) => {
-  const [isLogin, setIsLogin] = useState(false);
+const LoginForm = ({ onLoginComplete, onToggleForm }) => {
   const [showPassword, setShowPassword] = useState(false);
   
   const form = useForm({
     defaultValues: {
-      name: '',
       email: '',
-      password: '',
-      confirmPassword: ''
+      password: ''
     }
   });
 
   const onSubmit = (data) => {
-    if (data.password !== data.confirmPassword) {
-      toast.error("Passwords don't match");
+    // In a real app, we would validate against stored credentials
+    // For now, we'll just check if a user with this email exists
+    const savedUserData = localStorage.getItem('userData');
+    
+    if (!savedUserData) {
+      toast.error("No account found. Please sign up first.");
       return;
     }
     
-    // Store user data (in a real app, this would be sent to a backend)
-    const userData = {
-      name: data.name,
-      email: data.email,
-      createdAt: new Date().toISOString()
-    };
+    const userData = JSON.parse(savedUserData);
     
-    localStorage.setItem('userData', JSON.stringify(userData));
-    toast.success("Account created successfully!");
-    onSignupComplete(userData);
+    if (userData.email !== data.email) {
+      toast.error("Invalid email or password");
+      return;
+    }
+    
+    // In a real app, we would check the password hash
+    // Here we're just simulating a successful login
+    toast.success("Login successful!");
+    onLoginComplete(userData);
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  if (isLogin) {
-    return <LoginForm onLoginComplete={onSignupComplete} onToggleForm={() => setIsLogin(false)} />;
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 font-inter relative">
@@ -55,38 +52,14 @@ const UserSignupForm = ({ onSignupComplete }) => {
       
       <Card className="w-full max-w-md bg-white/90 backdrop-blur shadow-xl relative z-10">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Welcome Back!</CardTitle>
           <CardDescription className="text-center">
-            Enter your details to get started with Cha-Ching
+            Log in to your Cha-Ching account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                rules={{ required: "Name is required" }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input 
-                          placeholder="John Doe" 
-                          className="pl-10" 
-                          {...field} 
-                        />
-                        <div className="absolute left-3 top-3 text-gray-400">
-                          <Mail className="h-4 w-4" />
-                        </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
               <FormField
                 control={form.control}
                 name="email"
@@ -121,13 +94,7 @@ const UserSignupForm = ({ onSignupComplete }) => {
               <FormField
                 control={form.control}
                 name="password"
-                rules={{ 
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters"
-                  }
-                }}
+                rules={{ required: "Password is required" }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
@@ -161,42 +128,17 @@ const UserSignupForm = ({ onSignupComplete }) => {
                 )}
               />
               
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                rules={{ required: "Please confirm your password" }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input 
-                          type={showPassword ? "text" : "password"} 
-                          placeholder="••••••••" 
-                          className="pl-10"
-                          {...field} 
-                        />
-                        <div className="absolute left-3 top-3 text-gray-400">
-                          <Lock className="h-4 w-4" />
-                        </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button type="submit" className="w-full">Create Account</Button>
+              <Button type="submit" className="w-full">Log In</Button>
               
               <div className="text-center mt-4">
                 <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
+                  Don't have an account?{" "}
                   <button 
                     type="button"
-                    onClick={() => setIsLogin(true)} 
+                    onClick={onToggleForm} 
                     className="text-primary hover:underline font-medium"
                   >
-                    Log in
+                    Sign up
                   </button>
                 </p>
               </div>
@@ -208,4 +150,4 @@ const UserSignupForm = ({ onSignupComplete }) => {
   );
 };
 
-export default UserSignupForm;
+export default LoginForm;
