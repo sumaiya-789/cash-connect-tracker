@@ -1,7 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
+import { useAppContext } from '@/context/AppContext';
 
 const BackgroundAnimation = () => {
   const [particles, setParticles] = useState([]);
+  const { isDarkMode } = useAppContext();
+  
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1000,
     height: typeof window !== 'undefined' ? window.innerHeight : 800,
@@ -20,7 +24,8 @@ const BackgroundAnimation = () => {
     const newParticles = [];
     const numParticles = Math.min(Math.floor(windowSize.width / 60), 25);
 
-    const gradients = [
+    // Define gradients for light and dark mode
+    const lightGradients = [
       'bg-gradient-to-r from-red-500 to-orange-400',
       'bg-gradient-to-r from-yellow-400 to-pink-500',
       'bg-gradient-to-r from-green-400 to-lime-300',
@@ -30,6 +35,19 @@ const BackgroundAnimation = () => {
       'bg-gradient-to-r from-emerald-400 to-teal-300',
       'bg-gradient-to-r from-violet-500 to-fuchsia-400',
     ];
+    
+    const darkGradients = [
+      'bg-gradient-to-r from-red-700/40 to-orange-600/40',
+      'bg-gradient-to-r from-yellow-600/40 to-pink-700/40',
+      'bg-gradient-to-r from-green-600/40 to-lime-500/40',
+      'bg-gradient-to-r from-blue-600/40 to-indigo-700/40',
+      'bg-gradient-to-r from-purple-700/40 to-pink-600/40',
+      'bg-gradient-to-r from-cyan-600/40 to-blue-500/40',
+      'bg-gradient-to-r from-emerald-600/40 to-teal-500/40',
+      'bg-gradient-to-r from-violet-700/40 to-fuchsia-600/40',
+    ];
+
+    const gradients = isDarkMode ? darkGradients : lightGradients;
 
     for (let i = 0; i < numParticles; i++) {
       newParticles.push({
@@ -48,11 +66,14 @@ const BackgroundAnimation = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [windowSize.width, windowSize.height]);
+  }, [windowSize.width, windowSize.height, isDarkMode]);
 
   return (
     <div className="fixed inset-0 overflow-hidden -z-10">
-      <div className="absolute inset-0 bg-gradient-radial from-teal-50 via-blue-50 to-purple-50/30 opacity-90"></div>
+      <div className={`absolute inset-0 ${isDarkMode 
+        ? 'bg-gradient-radial from-gray-900/50 via-gray-900/80 to-gray-950/90' 
+        : 'bg-gradient-radial from-teal-50 via-blue-50 to-purple-50/30'} opacity-90`}>
+      </div>
       {particles.map((particle) => (
         <div
           key={particle.id}
@@ -63,7 +84,7 @@ const BackgroundAnimation = () => {
             left: `${particle.x}px`,
             top: `${particle.y}px`,
             filter: 'blur(6px)',
-            opacity: 0.7,
+            opacity: isDarkMode ? 0.5 : 0.7,
             animation: `
               particle-move-${particle.variant} ${particle.speed + 2}s ease-in-out infinite ${particle.id % 5}s,
               pulse-soft 3s ease-in-out infinite ${particle.id % 7}s
