@@ -10,16 +10,12 @@ import { saveTransactions, getTransactions } from '@/utils/localStorage';
 import UserSignupForm from '@/components/UserSignupForm';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import SpendingChart from '@/components/SpendingChart';
-import GoalForm from '@/components/GoalForm';
-import GoalsList from '@/components/GoalsList';
-import { saveGoals, getGoals } from '@/utils/goalUtils';
 import { toast } from "sonner";
 
 const ManualMode = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [userData, setUserData] = useState(null);
-  const [goals, setGoals] = useState([]);
   
   // Load user data and transactions from localStorage on component mount
   useEffect(() => {
@@ -29,20 +25,12 @@ const ManualMode = () => {
     if (savedUserData) {
       setUserData(JSON.parse(savedUserData));
     }
-    const savedGoals = getGoals();
-    setGoals(savedGoals);
   }, []);
   
   const handleAddTransaction = (newTransaction) => {
     const updatedTransactions = [...transactions, newTransaction];
     setTransactions(updatedTransactions);
     saveTransactions(updatedTransactions);
-  };
-  
-  const handleAddGoal = (newGoal) => {
-    const updatedGoals = [...goals, newGoal];
-    setGoals(updatedGoals);
-    saveGoals(updatedGoals);
   };
   
   const handleLogout = () => {
@@ -115,29 +103,19 @@ const ManualMode = () => {
           </Card>
         </div>
         
+        {/* Replace the original chart with SpendingChart component */}
         <SpendingChart transactions={transactions} />
         
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
             <TabsTrigger value="add">Add New</TabsTrigger>
-            <TabsTrigger value="goals">Goals</TabsTrigger>
           </TabsList>
           <TabsContent value="transactions" className="py-4">
             <TransactionList transactions={transactions} />
           </TabsContent>
           <TabsContent value="add" className="py-4">
             <TransactionForm onAddTransaction={handleAddTransaction} />
-          </TabsContent>
-          <TabsContent value="goals" className="py-4">
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Your Financial Goals</h2>
-              <GoalsList goals={goals} />
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-4">Add New Goal</h3>
-                <GoalForm onAddGoal={handleAddGoal} />
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </div>
