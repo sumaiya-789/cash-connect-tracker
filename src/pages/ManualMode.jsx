@@ -11,11 +11,15 @@ import UserSignupForm from '@/components/UserSignupForm';
 import BackgroundAnimation from '@/components/BackgroundAnimation';
 import SpendingChart from '@/components/SpendingChart';
 import { toast } from "sonner";
+import CurrencySelector from '@/components/CurrencySelector';
+import GoalsTab from '@/components/GoalsTab';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const ManualMode = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [userData, setUserData] = useState(null);
+  const { formatAmount } = useCurrency();
   
   // Load user data and transactions from localStorage on component mount
   useEffect(() => {
@@ -67,7 +71,8 @@ const ManualMode = () => {
           </h1>
           <p className="text-gray-600 text-sm">{userData.email}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <CurrencySelector />
           <Button variant="outline" onClick={() => navigate('/landing')}>
             Back
           </Button>
@@ -82,14 +87,14 @@ const ManualMode = () => {
           <Card className="bg-green-50/80 backdrop-blur">
             <CardContent className="pt-4">
               <h2 className="text-sm font-medium text-gray-600">Income</h2>
-              <p className="text-2xl font-bold text-green-600">${totalIncome.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-green-600">{formatAmount(totalIncome)}</p>
             </CardContent>
           </Card>
           
           <Card className="bg-red-50/80 backdrop-blur">
             <CardContent className="pt-4">
               <h2 className="text-sm font-medium text-gray-600">Expenses</h2>
-              <p className="text-2xl font-bold text-red-600">${totalExpenses.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-red-600">{formatAmount(totalExpenses)}</p>
             </CardContent>
           </Card>
           
@@ -97,25 +102,37 @@ const ManualMode = () => {
             <CardContent className="pt-4">
               <h2 className="text-sm font-medium text-gray-600">Balance</h2>
               <p className={`text-2xl font-bold ${balance >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                ${balance.toFixed(2)}
+                {formatAmount(balance)}
               </p>
             </CardContent>
           </Card>
         </div>
         
-        {/* Replace the original chart with SpendingChart component */}
         <SpendingChart transactions={transactions} />
         
         <Tabs defaultValue="transactions" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
-            <TabsTrigger value="add">Add New</TabsTrigger>
+            <TabsTrigger value="goals">Goals</TabsTrigger>
           </TabsList>
+          
           <TabsContent value="transactions" className="py-4">
-            <TransactionList transactions={transactions} />
+            <Tabs defaultValue="list" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="list">Transaction List</TabsTrigger>
+                <TabsTrigger value="add">Add New</TabsTrigger>
+              </TabsList>
+              <TabsContent value="list" className="py-4">
+                <TransactionList transactions={transactions} />
+              </TabsContent>
+              <TabsContent value="add" className="py-4">
+                <TransactionForm onAddTransaction={handleAddTransaction} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
-          <TabsContent value="add" className="py-4">
-            <TransactionForm onAddTransaction={handleAddTransaction} />
+          
+          <TabsContent value="goals" className="py-4">
+            <GoalsTab />
           </TabsContent>
         </Tabs>
       </div>
