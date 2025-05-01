@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from "sonner";
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Google } from 'lucide-react';
 import LoginForm from './LoginForm';
 import BackgroundAnimation from './BackgroundAnimation';
 
@@ -41,6 +41,21 @@ const UserSignupForm = ({ onSignupComplete }) => {
     onSignupComplete(userData);
   };
 
+  const handleGoogleSignup = () => {
+    // In a real app, we would use OAuth to authenticate with Google
+    // For demo purposes, simulate a successful signup
+    const userData = {
+      name: "Google User",
+      email: "google.user@example.com",
+      createdAt: new Date().toISOString(),
+      provider: "google"
+    };
+    
+    localStorage.setItem('userData', JSON.stringify(userData));
+    toast.success("Signed up with Google successfully!");
+    onSignupComplete(userData);
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -61,6 +76,25 @@ const UserSignupForm = ({ onSignupComplete }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full mb-4 flex items-center justify-center gap-2"
+            onClick={handleGoogleSignup}
+          >
+            <Google className="h-4 w-4" />
+            Sign up with Google
+          </Button>
+          
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300"></span>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+            </div>
+          </div>
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
