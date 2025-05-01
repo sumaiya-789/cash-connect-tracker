@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -6,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from "sonner";
-import { Mail, Lock, Eye, EyeOff, Google } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import GoogleIcon from './icons/GoogleIcon';
 import BackgroundAnimation from './BackgroundAnimation';
 
 const LoginForm = ({ onLoginComplete, onToggleForm }) => {
@@ -92,7 +92,7 @@ const LoginForm = ({ onLoginComplete, onToggleForm }) => {
             className="w-full mb-4 flex items-center justify-center gap-2"
             onClick={handleGoogleLogin}
           >
-            <Google className="h-4 w-4" />
+            <GoogleIcon className="h-4 w-4" />
             Sign in with Google
           </Button>
           
